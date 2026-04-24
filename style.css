@@ -855,3 +855,22 @@ body {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(.72); opacity: .65; }
 }
+
+
+/* Login: memorizar só email */
+.remember-row {
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 6px;
+  color: #d9b6df;
+  font-weight: 850;
+  user-select: none;
+}
+
+.remember-row input {
+  width: 18px !important;
+  height: 18px !important;
+  accent-color: #ff9500;
+  flex: 0 0 auto;
+}

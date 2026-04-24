@@ -20,7 +20,9 @@ import {
   signOut,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  setPersistence,
+  browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 console.log("[Brinka] app.js limpo carregado");
@@ -167,6 +169,7 @@ async function initFirebaseCore() {
     const app = initializeApp(window.BRINKA_FIREBASE_CONFIG);
     state.db = getFirestore(app);
     state.auth = getAuth(app);
+    await setPersistence(state.auth, browserSessionPersistence);
     try { await enableIndexedDbPersistence(state.db); } catch {}
     state.firebase = true;
     return true;
