@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#5b0b68" />
   <title>Desktop - Brinka Firebase — Fecho de Caixa</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=fix-data-iphone" />
+  <link rel="stylesheet" href="./style.css?v=scanner-dinheiro" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Brinka" />
@@ -207,6 +207,8 @@
                 <div class="total-row"><span>Moedas</span><strong id="sumCoins">0,00 €</strong></div>
                 <div class="total-row"><span>Esperado</span><strong id="sumExpected">0,00 €</strong></div>
                 <div class="total-row highlight"><span>Diferença</span><strong id="sumDiff">0,00 €</strong></div>
+                
+                <button class="soft-btn full scanner-open-btn" id="openMoneyScanner" type="button">📷 Contar dinheiro por câmera</button>
                 <button class="primary-btn full" id="saveClosure">Guardar fecho</button>
                 <button class="soft-btn full" id="clearForm">Limpar formulário</button>
               </article>
@@ -394,6 +396,43 @@
   <div class="toast" id="toast"></div>
 
   <script src="./firebase-config.js?v=scrollfix-final"></script>
-  <script type="module" src="./app.js?v=fix-data-iphone"></script>
+  <script type="module" src="./app.js?v=scanner-dinheiro"></script>
+
+  <section class="scanner-modal hidden" id="moneyScannerModal" aria-hidden="true">
+    <div class="scanner-card">
+      <div class="scanner-head">
+        <div>
+          <p class="eyebrow">Scanner dinheiro</p>
+          <h3>Câmara + confirmação</h3>
+        </div>
+        <button class="scanner-close" id="closeMoneyScanner" type="button">×</button>
+      </div>
+
+      <div class="scanner-video-wrap">
+        <video id="moneyScannerVideo" playsinline autoplay muted></video>
+        <div class="scanner-frame"></div>
+      </div>
+
+      <p class="scanner-help">
+        Separa as notas/moedas, aponta a câmera e confirma o valor. Esta versão é assistida para evitar erros de caixa.
+      </p>
+
+      <div class="scanner-tabs">
+        <button class="scanner-tab active" data-scan-tab="notes" type="button">Notas</button>
+        <button class="scanner-tab" data-scan-tab="coins" type="button">Moedas</button>
+      </div>
+
+      <div class="scanner-values" id="scannerValues"></div>
+
+      <div class="scanner-actions">
+        <button class="soft-btn" id="scannerMinus" type="button">-1</button>
+        <button class="primary-btn" id="scannerAdd" type="button">Adicionar +1</button>
+        <button class="soft-btn" id="scannerPlusFive" type="button">+5</button>
+      </div>
+
+      <div class="scanner-selected" id="scannerSelected">Seleciona um valor</div>
+    </div>
+  </section>
+
 </body>
 </html>

@@ -999,6 +999,134 @@ async function saveUserProfile() {
   }
 }
 
+
+// Scanner dinheiro assistido
+const scannerState = {
+  stream: null,
+  tab: "notes",
+  selectedValue: null
+};
+
+function scannerValuesForTab() {
+  return scannerState.tab === "notes" ? noteValues : coinValues;
+}
+
+function moneyRowInputForValue(value) {
+  const selector = scannerState.tab === "notes" ? "#notesRows .money-row" : "#coinsRows .money-row";
+  return [...document.querySelectorAll(selector)]
+    .find(row => Number(row.dataset.value) === Number(value))
+    ?.querySelector("input");
+}
+
+function renderScannerValues() {
+  const wrap = $("scannerValues");
+  if (!wrap) return;
+
+  const values = scannerValuesForTab();
+  if (!scannerState.selectedValue || !values.includes(scannerState.selectedValue)) {
+    scannerState.selectedValue = values[0];
+  }
+
+  wrap.innerHTML = values.map(value => `
+    <button type="button" data-scanner-value="${value}" class="${Number(scannerState.selectedValue) === Number(value) ? "active" : ""}">
+      ${String(value).replace(".", ",")}€
+    </button>
+  `).join("");
+
+  wrap.querySelectorAll("[data-scanner-value]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      scannerState.selectedValue = Number(btn.dataset.scannerValue);
+      renderScannerValues();
+      updateScannerSelected();
+    });
+  });
+
+  updateScannerSelected();
+}
+
+function updateScannerSelected() {
+  const el = $("scannerSelected");
+  if (!el) return;
+  const type = scannerState.tab === "notes" ? "nota" : "moeda";
+  el.textContent = `Selecionado: ${type} de ${String(scannerState.selectedValue).replace(".", ",")}€`;
+}
+
+async function openMoneyScanner() {
+  const modal = $("moneyScannerModal");
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+  renderScannerValues();
+
+  try {
+    const video = $("moneyScannerVideo");
+    scannerState.stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: "environment" } },
+      audio: false
+    });
+
+    if (video) {
+      video.srcObject = scannerState.stream;
+      await video.play().catch(() => {});
+    }
+  } catch (error) {
+    console.warn("[Brinka] câmera indisponível:", error);
+    toast("Não foi possível abrir a câmera. Verifica permissões.");
+  }
+}
+
+function closeMoneyScanner() {
+  const modal = $("moneyScannerModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+  }
+
+  if (scannerState.stream) {
+    scannerState.stream.getTracks().forEach(track => track.stop());
+    scannerState.stream = null;
+  }
+
+  const video = $("moneyScannerVideo");
+  if (video) video.srcObject = null;
+}
+
+function addScannerQty(amount) {
+  if (!scannerState.selectedValue) return toast("Seleciona um valor");
+
+  const input = moneyRowInputForValue(scannerState.selectedValue);
+  if (!input) return toast("Campo não encontrado");
+
+  const current = Number(input.value || 0);
+  input.value = Math.max(0, current + amount);
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+
+  const label = scannerState.tab === "notes" ? "nota" : "moeda";
+  toast(`${amount > 0 ? "+" : ""}${amount} ${label} de ${String(scannerState.selectedValue).replace(".", ",")}€`);
+}
+
+function bindMoneyScanner() {
+  $("openMoneyScanner")?.addEventListener("click", openMoneyScanner);
+  $("closeMoneyScanner")?.addEventListener("click", closeMoneyScanner);
+  $("moneyScannerModal")?.addEventListener("click", event => {
+    if (event.target?.id === "moneyScannerModal") closeMoneyScanner();
+  });
+
+  document.querySelectorAll("[data-scan-tab]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      scannerState.tab = btn.dataset.scanTab;
+      document.querySelectorAll("[data-scan-tab]").forEach(b => b.classList.toggle("active", b === btn));
+      scannerState.selectedValue = null;
+      renderScannerValues();
+    });
+  });
+
+  $("scannerAdd")?.addEventListener("click", () => addScannerQty(1));
+  $("scannerPlusFive")?.addEventListener("click", () => addScannerQty(5));
+  $("scannerMinus")?.addEventListener("click", () => addScannerQty(-1));
+}
+
 function bindEvents() {
   document.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => switchPage(b.dataset.page)));
 
@@ -1049,6 +1177,7 @@ async function init() {
   buildMoneyRows("notesRows", noteValues);
   buildMoneyRows("coinsRows", coinValues);
   bindEvents();
+  bindMoneyScanner();
   loadRememberedEmail();
   setNowDate();
   calculate();
