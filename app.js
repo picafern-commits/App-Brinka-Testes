@@ -716,6 +716,76 @@ async function deleteClosure(id) {
   }
 }
 
+
+function getDayKeyFromIso(dateIso) {
+  const d = dateIso ? new Date(dateIso) : new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+function getDailyTotals() {
+  const map = {};
+
+  (state.closures || []).forEach(item => {
+    if (!item.dateIso) return;
+    const key = getDayKeyFromIso(item.dateIso);
+    if (!map[key]) map[key] = { total: 0, count: 0, date: new Date(item.dateIso) };
+    map[key].total += Number(item.total || 0);
+    map[key].count += 1;
+  });
+
+  return Object.entries(map)
+    .map(([key, value]) => ({ key, ...value }))
+    .sort((a, b) => new Date(b.key) - new Date(a.key));
+}
+
+function renderProfitDashboard() {
+  if (!$("profitPanel")) return;
+
+  const days = getDailyTotals();
+  const todayKey = getDayKeyFromIso(new Date().toISOString());
+  const today = days.find(day => day.key === todayKey) || { total: 0, count: 0, key: todayKey };
+  const previous = days.find(day => day.key !== todayKey) || { total: 0, count: 0, key: "" };
+
+  const diff = Number(today.total || 0) - Number(previous.total || 0);
+  const hasPrevious = Boolean(previous.key);
+
+  if ($("profitToday")) $("profitToday").textContent = eur(today.total);
+  if ($("profitYesterday")) $("profitYesterday").textContent = hasPrevious ? eur(previous.total) : "—";
+  if ($("profitDiff")) $("profitDiff").textContent = hasPrevious ? eur(diff) : "—";
+
+  const status = $("profitStatus");
+  if (status) {
+    if (!hasPrevious) {
+      status.textContent = "Sem comparação";
+      status.className = "pill";
+    } else if (diff > 0) {
+      status.textContent = "Subiu";
+      status.className = "pill profit-good";
+    } else if (diff < 0) {
+      status.textContent = "Desceu";
+      status.className = "pill profit-bad";
+    } else {
+      status.textContent = "Igual";
+      status.className = "pill profit-neutral";
+    }
+  }
+
+  if ($("profitNote")) {
+    if (!hasPrevious) {
+      $("profitNote").textContent = "Ainda não existe fecho de um dia anterior para comparar.";
+    } else {
+      const percent = previous.total > 0 ? ((diff / previous.total) * 100) : 0;
+      $("profitNote").textContent = `${today.count} fecho(s) hoje comparado com ${previous.count} fecho(s) do dia anterior registado. Variação: ${percent > 0 ? "+" : ""}${percent.toFixed(1)}%.`;
+    }
+  }
+
+  const panel = $("profitPanel");
+  if (panel) {
+    panel.classList.remove("profit-up", "profit-down", "profit-flat");
+    panel.classList.add(!hasPrevious || diff === 0 ? "profit-flat" : diff > 0 ? "profit-up" : "profit-down");
+  }
+}
+
 function renderDashboard() {
   const today = new Date().toLocaleDateString("pt-PT");
   const todayItems = state.closures.filter(i => i.dateIso && new Date(i.dateIso).toLocaleDateString("pt-PT") === today);
@@ -744,6 +814,7 @@ function renderDashboard() {
   }
 
   renderSmartDashboard();
+  renderProfitDashboard();
   renderMultiLojaResumo();
 }
 

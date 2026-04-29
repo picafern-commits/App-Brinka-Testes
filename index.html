@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#5b0b68" />
   <title>Desktop - Brinka Firebase — Fecho de Caixa</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=sem-esperado-editar" />
+  <link rel="stylesheet" href="./style.css?v=lucro-dia" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Brinka" />
@@ -155,6 +155,31 @@
             <div class="insights-list" id="smartInsights"></div>
           </article>
 
+
+
+          <article class="panel profit-panel" id="profitPanel">
+            <div class="panel-title">
+              <h3>Lucro diário</h3>
+              <span class="pill" id="profitStatus">Sem comparação</span>
+            </div>
+
+            <div class="profit-grid">
+              <div class="profit-box">
+                <span>Fecho atual</span>
+                <strong id="profitToday">0,00 €</strong>
+              </div>
+              <div class="profit-box">
+                <span>Fecho dia anterior</span>
+                <strong id="profitYesterday">0,00 €</strong>
+              </div>
+              <div class="profit-box main">
+                <span>Lucro / Diferença</span>
+                <strong id="profitDiff">0,00 €</strong>
+              </div>
+            </div>
+
+            <p class="profit-note" id="profitNote">Guarda fechos para começar a comparar.</p>
+          </article>
 
           <article class="panel admin-page" id="multiLojaPanel">
             <div class="panel-title">
@@ -395,7 +420,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="./firebase-config.js?v=scrollfix-final"></script>
-  <script type="module" src="./app.js?v=sem-esperado-editar"></script>
+  <script type="module" src="./app.js?v=lucro-dia"></script>
 
   <section class="edit-modal hidden" id="editClosureModal" aria-hidden="true">
     <div class="edit-card">
