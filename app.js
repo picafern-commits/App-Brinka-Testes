@@ -3,6 +3,7 @@ import {
   getFirestore,
   collection,
   addDoc,
+  updateDoc,
   deleteDoc,
   doc,
   setDoc,
@@ -451,6 +452,8 @@ async function startStoreListener() {
   state.unsubscribe = onSnapshot(q, (snap) => {
     state.closures = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAll();
+    setExpectedFromPrevious();
+    calculate();
     setStatus("online", "Firebase ativo", `Dados sincronizados · ${getActiveStoreName()}`);
     createDailyBackup("auto").catch(console.warn);
   }, (error) => {
@@ -491,13 +494,36 @@ function collectRows(selector) {
   });
 }
 
+
+function getPreviousClosureValue(currentId = null, dateIso = null) {
+  const sorted = [...state.closures]
+    .filter(i => !currentId || (i.id || i.localId) !== currentId)
+    .sort((a, b) => new Date(b.dateIso || 0) - new Date(a.dateIso || 0));
+
+  if (!sorted.length) return 0;
+
+  if (dateIso) {
+    const before = sorted.find(i => new Date(i.dateIso || 0) < new Date(dateIso));
+    if (before) return Number(before.total || 0);
+  }
+
+  return Number(sorted[0].total || 0);
+}
+
+function setExpectedFromPrevious() {
+  const previous = getPreviousClosureValue();
+  if ($("expected")) $("expected").value = previous ? String(previous.toFixed(2)) : "0";
+  return previous;
+}
+
 function calculate() {
   const notes = collectRows("#notesRows .money-row");
   const coins = collectRows("#coinsRows .money-row");
   const notesTotal = notes.reduce((sum, r) => sum + r.subtotal, 0);
   const coinsTotal = coins.reduce((sum, r) => sum + r.subtotal, 0);
   const total = notesTotal + coinsTotal;
-  const expected = Number($("expected")?.value || 0);
+  const expected = getPreviousClosureValue();
+  if ($("expected")) $("expected").value = expected ? String(expected.toFixed(2)) : "0";
   const diff = total - expected;
 
   if ($("notesTotal")) $("notesTotal").textContent = eur(notesTotal);
@@ -511,7 +537,7 @@ function calculate() {
   const badge = $("diffBadge");
   if (badge) {
     const level = getDiffLevel(diff);
-    badge.textContent = expected ? getDiffLabel(diff) : "Sem esperado";
+    badge.textContent = expected ? getDiffLabel(diff) : "Sem fecho anterior";
     badge.style.background = level === "danger" ? "rgba(255,92,114,.16)" : level === "warning" ? "rgba(255,149,0,.15)" : "rgba(49,210,124,.16)";
     badge.style.color = level === "danger" ? "#ffd0d7" : level === "warning" ? "#ffd7a0" : "#9ff2c5";
   }
@@ -537,7 +563,7 @@ function validateDiffBeforeSave(calc) {
   const diffAbs = Math.abs(Number(calc.diff || 0));
   const obs = $("obs")?.value.trim() || "";
 
-  if (diffAbs >= 0.005 && obs.length < 3) {
+  if (Number(calc.expected || 0) > 0 && diffAbs >= 0.005 && obs.length < 3) {
     toast("Tens diferença de caixa. Mete uma observação.");
     $("obs")?.focus();
     return false;
@@ -568,6 +594,7 @@ async function saveClosure() {
     operatorEmail: state.user.email,
     role: state.profile?.role || "user",
     expected: calc.expected,
+    previousTotal: calc.expected,
     diff: calc.diff,
     diffLevel: getDiffLevel(calc.diff),
     diffLabel: getDiffLabel(calc.diff),
@@ -577,7 +604,8 @@ async function saveClosure() {
     notes: calc.notes,
     coins: calc.coins,
     observation: $("obs")?.value.trim() || "",
-    createdAt: serverTimestamp()
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
   };
 
   try {
@@ -593,11 +621,88 @@ async function saveClosure() {
 function clearForm(show = true) {
   document.querySelectorAll(".money-row input").forEach(i => i.value = "");
   if ($("store")) $("store").value = getActiveStoreId();
-  if ($("expected")) $("expected").value = state.settings.defaultExpected || "";
+  setExpectedFromPrevious();
   if ($("obs")) $("obs").value = "";
   setNowDate();
   calculate();
   if (show) toast("Formulário limpo");
+}
+
+
+function toDateTimeLocalValue(dateIso) {
+  if (!dateIso) return "";
+  const d = new Date(dateIso);
+  if (Number.isNaN(d.getTime())) return "";
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 16);
+}
+
+function openEditClosure(id) {
+  const item = state.closures.find(i => (i.id || i.localId) === id);
+  if (!item) return toast("Fecho não encontrado");
+
+  const previous = getPreviousClosureValue(id, item.dateIso);
+
+  if ($("editClosureId")) $("editClosureId").value = id;
+  if ($("editOperator")) $("editOperator").value = item.operator || "";
+  if ($("editDate")) $("editDate").value = toDateTimeLocalValue(item.dateIso);
+  if ($("editTotal")) $("editTotal").value = Number(item.total || 0).toFixed(2);
+  if ($("editPrevious")) $("editPrevious").value = previous ? previous.toFixed(2) : "0.00";
+  if ($("editObs")) $("editObs").value = item.observation || "";
+
+  $("editClosureModal")?.classList.remove("hidden");
+  $("editClosureModal")?.setAttribute("aria-hidden", "false");
+}
+
+function closeEditClosure() {
+  $("editClosureModal")?.classList.add("hidden");
+  $("editClosureModal")?.setAttribute("aria-hidden", "true");
+}
+
+async function saveEditedClosure() {
+  const id = $("editClosureId")?.value;
+  if (!id) return toast("Fecho inválido");
+
+  const item = state.closures.find(i => (i.id || i.localId) === id);
+  if (!item) return toast("Fecho não encontrado");
+
+  const dateIso = $("editDate")?.value ? new Date($("editDate").value).toISOString() : item.dateIso;
+  const total = Number($("editTotal")?.value || 0);
+  const previous = getPreviousClosureValue(id, dateIso);
+  const diff = total - previous;
+
+  if (total <= 0) return toast("Total inválido");
+
+  const obs = $("editObs")?.value.trim() || "";
+  if (Math.abs(diff) >= 0.005 && previous > 0 && obs.length < 3) {
+    toast("Mete uma observação para justificar a diferença");
+    $("editObs")?.focus();
+    return;
+  }
+
+  try {
+    await updateDoc(doc(state.db, "brinka_lojas", getActiveStoreId(), "fechos", id), {
+      operator: $("editOperator")?.value.trim() || item.operator || "",
+      dateIso,
+      dateLabel: new Date(dateIso).toLocaleString("pt-PT", { dateStyle: "short", timeStyle: "short" }),
+      total,
+      expected: previous,
+      previousTotal: previous,
+      diff,
+      diffLevel: getDiffLevel(diff),
+      diffLabel: getDiffLabel(diff),
+      observation: obs,
+      edited: true,
+      editedAt: serverTimestamp(),
+      editedBy: state.user?.email || ""
+    });
+
+    closeEditClosure();
+    toast("Fecho atualizado");
+  } catch (error) {
+    console.error(error);
+    toast("Erro ao editar fecho");
+  }
 }
 
 async function deleteClosure(id) {
@@ -718,12 +823,13 @@ function renderHistory() {
       <td>${i.store || getActiveStoreName()}</td>
       <td>${i.operator || "—"}</td>
       <td><b>${eur(i.total)}</b></td>
-      <td>${eur(i.expected)}</td>
+      <td>${eur(i.previousTotal ?? i.expected)}</td>
       <td><span class="diff-badge ${getDiffLevel(i.diff)}">${eur(i.diff)} · ${getDiffLabel(i.diff)}</span></td>
-      <td><button class="delete-row" data-delete="${i.id || i.localId}">Apagar</button></td>
+      <td><button class="mini-btn" data-edit="${i.id || i.localId}">Editar</button> <button class="delete-row" data-delete="${i.id || i.localId}">Apagar</button></td>
     </tr>
   `).join("") || `<tr><td colspan="7" class="muted">Sem resultados.</td></tr>`;
 
+  document.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => openEditClosure(b.dataset.edit)));
   document.querySelectorAll("[data-delete]").forEach(b => b.addEventListener("click", () => deleteClosure(b.dataset.delete)));
 }
 
@@ -999,212 +1105,6 @@ async function saveUserProfile() {
   }
 }
 
-
-// Scanner dinheiro assistido
-const scannerState = {
-  stream: null,
-  tab: "notes",
-  selectedValue: null
-};
-
-function scannerValuesForTab() {
-  return scannerState.tab === "notes" ? noteValues : coinValues;
-}
-
-function moneyRowInputForValue(value) {
-  const selector = scannerState.tab === "notes" ? "#notesRows .money-row" : "#coinsRows .money-row";
-  return [...document.querySelectorAll(selector)]
-    .find(row => Number(row.dataset.value) === Number(value))
-    ?.querySelector("input");
-}
-
-function renderScannerValues() {
-  const wrap = $("scannerValues");
-  if (!wrap) return;
-
-  const values = scannerValuesForTab();
-  if (!scannerState.selectedValue || !values.includes(scannerState.selectedValue)) {
-    scannerState.selectedValue = values[0];
-  }
-
-  wrap.innerHTML = values.map(value => `
-    <button type="button" data-scanner-value="${value}" class="${Number(scannerState.selectedValue) === Number(value) ? "active" : ""}">
-      ${String(value).replace(".", ",")}€
-    </button>
-  `).join("");
-
-  wrap.querySelectorAll("[data-scanner-value]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      scannerState.selectedValue = Number(btn.dataset.scannerValue);
-      renderScannerValues();
-      updateScannerSelected();
-    });
-  });
-
-  updateScannerSelected();
-}
-
-function updateScannerSelected() {
-  const el = $("scannerSelected");
-  if (!el) return;
-  const type = scannerState.tab === "notes" ? "nota" : "moeda";
-  el.textContent = `Selecionado: ${type} de ${String(scannerState.selectedValue).replace(".", ",")}€`;
-}
-
-async function openMoneyScanner() {
-  const modal = $("moneyScannerModal");
-  if (!modal) return;
-
-  modal.classList.remove("hidden");
-  modal.setAttribute("aria-hidden", "false");
-  renderScannerValues();
-
-  try {
-    const video = $("moneyScannerVideo");
-    scannerState.stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: "environment" } },
-      audio: false
-    });
-
-    if (video) {
-      video.srcObject = scannerState.stream;
-      await video.play().catch(() => {});
-    }
-  } catch (error) {
-    console.warn("[Brinka] câmera indisponível:", error);
-    toast("Não foi possível abrir a câmera. Verifica permissões.");
-  }
-}
-
-function closeMoneyScanner() {
-  stopScannerAuto();
-  const modal = $("moneyScannerModal");
-  if (modal) {
-    modal.classList.add("hidden");
-    modal.setAttribute("aria-hidden", "true");
-  }
-
-  if (scannerState.stream) {
-    scannerState.stream.getTracks().forEach(track => track.stop());
-    scannerState.stream = null;
-  }
-
-  const video = $("moneyScannerVideo");
-  if (video) video.srcObject = null;
-}
-
-function addScannerQty(amount) {
-  if (!scannerState.selectedValue) return toast("Seleciona um valor");
-
-  const input = moneyRowInputForValue(scannerState.selectedValue);
-  if (!input) return toast("Campo não encontrado");
-
-  const current = Number(input.value || 0);
-  input.value = Math.max(0, current + amount);
-  input.dispatchEvent(new Event("input", { bubbles: true }));
-
-  const label = scannerState.tab === "notes" ? "nota" : "moeda";
-  toast(`${amount > 0 ? "+" : ""}${amount} ${label} de ${String(scannerState.selectedValue).replace(".", ",")}€`);
-}
-
-
-// Auto-contagem experimental por câmera
-let scannerAutoTimer=null, scannerAutoEnabled=false, scannerLastAutoKey="", scannerLastAutoAt=0;
-
-function scannerSetAutoResult(text, cls="warn"){
-  const el=$("scannerAutoResult"); if(!el)return;
-  el.textContent=text; el.classList.remove("ok","warn"); el.classList.add(cls);
-}
-function rgbToHsv(r,g,b){
-  r/=255;g/=255;b/=255; const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
-  let h=0; if(d!==0){ if(max===r)h=((g-b)/d)%6; else if(max===g)h=(b-r)/d+2; else h=(r-g)/d+4; h*=60; if(h<0)h+=360; }
-  return {h,s:max===0?0:d/max,v:max};
-}
-function scannerAnalyzeFrame(){
-  const video=$("moneyScannerVideo"); if(!video||!video.videoWidth||!video.videoHeight)return null;
-  const canvas=document.createElement("canvas"); canvas.width=160; canvas.height=120;
-  const ctx=canvas.getContext("2d",{willReadFrequently:true}); ctx.drawImage(video,0,0,160,120);
-  const data=ctx.getImageData(0,0,160,120).data;
-  let count=0,rSum=0,gSum=0,bSum=0,satSum=0,valSum=0,colorful=0,bright=0,dark=0;
-  for(let y=28;y<92;y+=2){for(let x=34;x<126;x+=2){
-    const i=(y*160+x)*4, r=data[i], g=data[i+1], b=data[i+2], hsv=rgbToHsv(r,g,b);
-    count++; rSum+=r; gSum+=g; bSum+=b; satSum+=hsv.s; valSum+=hsv.v;
-    if(hsv.s>.18&&hsv.v>.20)colorful++; if(hsv.v>.72)bright++; if(hsv.v<.20)dark++;
-  }}
-  const hsv=rgbToHsv(rSum/count,gSum/count,bSum/count), sat=satSum/count, val=valSum/count;
-  const colorfulPct=colorful/count, brightPct=bright/count, darkPct=dark/count;
-  if(darkPct>.55||val<.22)return{type:"none",reason:"Pouca luz / sem objeto"};
-  if(colorfulPct<.08&&brightPct<.28)return{type:"none",reason:"Objeto pouco visível"};
-
-  let note=null, hue=hsv.h;
-  if(sat<.13&&val>.38)note=5;
-  else if((hue>=330||hue<18)&&sat>.18)note=10;
-  else if(hue>=185&&hue<=250&&sat>.15)note=20;
-  else if(hue>=18&&hue<=48&&sat>.18)note=50;
-  else if(hue>=78&&hue<=155&&sat>.13)note=100;
-  else if(hue>=48&&hue<=78&&sat>.18)note=200;
-  else if(hue>=260&&hue<=330&&sat>.12)note=500;
-  if(note)return{type:"notes",value:note,confidence:Math.min(.94,.50+colorfulPct+sat)};
-
-  let coin=null;
-  if(sat<.16&&val>.55)coin=1;
-  else if(hue>=25&&hue<=55&&sat>.20)coin=.10;
-  else if(hue>=45&&hue<=75&&sat>.12)coin=2;
-  if(coin)return{type:"coins",value:coin,confidence:.45};
-
-  return{type:"none",reason:"Não consegui reconhecer"};
-}
-function scannerApplyAutoDetection(result){
-  if(!result||result.type==="none"){scannerSetAutoResult(result?.reason||"A procurar dinheiro...","warn");return;}
-  const key=`${result.type}-${result.value}`, now=Date.now();
-  if(scannerLastAutoKey===key&&now-scannerLastAutoAt<2500){
-    scannerSetAutoResult(`Detetado ${String(result.value).replace(".",",")}€ — aguarda para não duplicar`,"warn");return;
-  }
-  scannerState.tab=result.type; scannerState.selectedValue=Number(result.value);
-  document.querySelectorAll("[data-scan-tab]").forEach(btn=>btn.classList.toggle("active",btn.dataset.scanTab===result.type));
-  renderScannerValues();
-  const input=moneyRowInputForValue(result.value);
-  if(!input){scannerSetAutoResult("Valor detetado mas campo não encontrado","warn");return;}
-  input.value=Number(input.value||0)+1; input.dispatchEvent(new Event("input",{bubbles:true}));
-  scannerLastAutoKey=key; scannerLastAutoAt=now;
-  scannerSetAutoResult(`✅ Adicionado automaticamente: ${result.type==="notes"?"nota":"moeda"} de ${String(result.value).replace(".",",")}€`,"ok");
-}
-function startScannerAuto(){
-  if(scannerAutoTimer)clearInterval(scannerAutoTimer);
-  scannerAutoEnabled=true; scannerLastAutoKey=""; scannerLastAutoAt=0;
-  const btn=$("scannerAutoToggle"); if(btn)btn.textContent="Auto: ON";
-  scannerSetAutoResult("Auto ligado — coloca uma nota/moeda dentro da moldura","warn");
-  scannerAutoTimer=setInterval(()=>scannerApplyAutoDetection(scannerAnalyzeFrame()),900);
-}
-function stopScannerAuto(){
-  scannerAutoEnabled=false; if(scannerAutoTimer)clearInterval(scannerAutoTimer); scannerAutoTimer=null;
-  const btn=$("scannerAutoToggle"); if(btn)btn.textContent="Auto: OFF";
-  scannerSetAutoResult("Auto parado","warn");
-}
-function toggleScannerAuto(){scannerAutoEnabled?stopScannerAuto():startScannerAuto();}
-
-function bindMoneyScanner() {
-  $("openMoneyScanner")?.addEventListener("click", openMoneyScanner);
-  $("closeMoneyScanner")?.addEventListener("click", closeMoneyScanner);
-  $("moneyScannerModal")?.addEventListener("click", event => {
-    if (event.target?.id === "moneyScannerModal") closeMoneyScanner();
-  });
-
-  document.querySelectorAll("[data-scan-tab]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      scannerState.tab = btn.dataset.scanTab;
-      document.querySelectorAll("[data-scan-tab]").forEach(b => b.classList.toggle("active", b === btn));
-      scannerState.selectedValue = null;
-      renderScannerValues();
-    });
-  });
-
-  $("scannerAdd")?.addEventListener("click", () => addScannerQty(1));
-  $("scannerPlusFive")?.addEventListener("click", () => addScannerQty(5));
-  $("scannerMinus")?.addEventListener("click", () => addScannerQty(-1));
-  $("scannerAutoToggle")?.addEventListener("click", toggleScannerAuto);
-}
-
 function bindEvents() {
   document.querySelectorAll("[data-page]").forEach(b => b.addEventListener("click", () => switchPage(b.dataset.page)));
 
@@ -1241,6 +1141,11 @@ function bindEvents() {
   $("clearUserForm")?.addEventListener("click", clearUserForm);
   $("refreshUsers")?.addEventListener("click", loadUsers);
   $("createAuthUserBtn")?.addEventListener("click", createAuthUserAndFillUid);
+
+  $("closeEditClosure")?.addEventListener("click", closeEditClosure);
+  $("cancelEditClosure")?.addEventListener("click", closeEditClosure);
+  $("saveEditClosure")?.addEventListener("click", saveEditedClosure);
+
 }
 
 document.addEventListener("click", event => {
@@ -1255,7 +1160,6 @@ async function init() {
   buildMoneyRows("notesRows", noteValues);
   buildMoneyRows("coinsRows", coinValues);
   bindEvents();
-  bindMoneyScanner();
   loadRememberedEmail();
   setNowDate();
   calculate();

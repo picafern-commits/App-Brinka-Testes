@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#5b0b68" />
   <title>Desktop - Brinka Firebase — Fecho de Caixa</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=scanner-auto" />
+  <link rel="stylesheet" href="./style.css?v=sem-esperado-editar" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Brinka" />
@@ -30,7 +30,9 @@
         <p class="eyebrow">Acesso seguro</p>
         <h2>Entrar na app</h2>
 
-        <label class="wide-label">
+        <input id="expected" type="hidden" value="0" />
+
+                <label class="wide-label">
           <span>Email</span>
           <input id="loginEmail" type="email" placeholder="email@loja.com" autocomplete="email" />
         </label>
@@ -170,13 +172,12 @@
               <article class="panel">
                 <div class="panel-title">
                   <h3>Dados do fecho</h3>
-                  <span class="pill" id="diffBadge">Sem esperado</span>
+                  <span class="pill" id="diffBadge">Comparação</span>
                 </div>
 
                 <div class="form-grid">
                   <label><span>Utilizador</span><input id="operator" type="text" placeholder="Ex: Ricardo" /></label>
                   <label><span>Loja</span><select id="store"></select></label>
-                  <label><span>Valor esperado</span><input id="expected" type="number" step="0.01" min="0" placeholder="0.00" /></label>
                   <label><span>Data</span><input id="closeDate" type="datetime-local" /></label>
                 </div>
 
@@ -205,10 +206,8 @@
                 <h2 id="grandTotal">0,00 €</h2>
                 <div class="total-row"><span>Notas</span><strong id="sumNotes">0,00 €</strong></div>
                 <div class="total-row"><span>Moedas</span><strong id="sumCoins">0,00 €</strong></div>
-                <div class="total-row"><span>Esperado</span><strong id="sumExpected">0,00 €</strong></div>
+                <div class="total-row"><span>Fecho anterior</span><strong id="sumExpected">0,00 €</strong></div>
                 <div class="total-row highlight"><span>Diferença</span><strong id="sumDiff">0,00 €</strong></div>
-                
-                <button class="soft-btn full scanner-open-btn" id="openMoneyScanner" type="button">📷 Contar dinheiro por câmera</button>
                 <button class="primary-btn full" id="saveClosure">Guardar fecho</button>
                 <button class="soft-btn full" id="clearForm">Limpar formulário</button>
               </article>
@@ -240,7 +239,7 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Data</th><th>Loja</th><th>Utilizador</th><th>Total</th><th>Esperado</th><th>Diferença</th><th></th>
+                    <th>Data</th><th>Loja</th><th>Utilizador</th><th>Total</th><th>Fecho anterior</th><th>Diferença</th><th></th>
                   </tr>
                 </thead>
                 <tbody id="historyTable"></tbody>
@@ -396,47 +395,36 @@
   <div class="toast" id="toast"></div>
 
   <script src="./firebase-config.js?v=scrollfix-final"></script>
-  <script type="module" src="./app.js?v=scanner-auto"></script>
+  <script type="module" src="./app.js?v=sem-esperado-editar"></script>
 
-  <section class="scanner-modal hidden" id="moneyScannerModal" aria-hidden="true">
-    <div class="scanner-card">
-      <div class="scanner-head">
+  <section class="edit-modal hidden" id="editClosureModal" aria-hidden="true">
+    <div class="edit-card">
+      <div class="edit-head">
         <div>
-          <p class="eyebrow">Scanner dinheiro</p>
-          <h3>Câmara + confirmação</h3>
+          <p class="eyebrow">Editar fecho</p>
+          <h3>Corrigir registo</h3>
         </div>
-        <button class="scanner-close" id="closeMoneyScanner" type="button">×</button>
+        <button class="edit-close" id="closeEditClosure" type="button">×</button>
       </div>
 
-      <div class="scanner-video-wrap">
-        <video id="moneyScannerVideo" playsinline autoplay muted></video>
-        <div class="scanner-frame"></div>
+      <input id="editClosureId" type="hidden" />
+
+      <div class="form-grid">
+        <label><span>Utilizador</span><input id="editOperator" type="text" /></label>
+        <label><span>Data</span><input id="editDate" type="datetime-local" /></label>
+        <label><span>Total</span><input id="editTotal" type="number" step="0.01" min="0" /></label>
+        <label><span>Fecho anterior</span><input id="editPrevious" type="number" step="0.01" min="0" disabled /></label>
       </div>
 
-      <p class="scanner-help">
-        Separa as notas/moedas, aponta a câmera e confirma o valor. Esta versão é assistida para evitar erros de caixa.
-      </p>
+      <label class="wide-label">
+        <span>Observações</span>
+        <textarea id="editObs" rows="3" placeholder="Motivo da alteração..."></textarea>
+      </label>
 
-      <div class="scanner-tabs">
-        <button class="scanner-tab active" data-scan-tab="notes" type="button">Notas</button>
-        <button class="scanner-tab" data-scan-tab="coins" type="button">Moedas</button>
+      <div class="edit-actions">
+        <button class="soft-btn" id="cancelEditClosure" type="button">Cancelar</button>
+        <button class="primary-btn" id="saveEditClosure" type="button">Guardar alteração</button>
       </div>
-
-      <div class="scanner-values" id="scannerValues"></div>
-
-      <div class="scanner-actions">
-        <button class="soft-btn" id="scannerMinus" type="button">-1</button>
-        <button class="primary-btn" id="scannerAdd" type="button">Adicionar +1</button>
-        <button class="soft-btn" id="scannerPlusFive" type="button">+5</button>
-      </div>
-
-      
-      <div class="scanner-auto-box">
-        <div><strong>Auto-contagem experimental</strong><p>Coloca uma nota/moeda de cada vez dentro da moldura. A app tenta detetar e soma automaticamente.</p></div>
-        <button class="primary-btn" id="scannerAutoToggle" type="button">Auto: OFF</button>
-      </div>
-      <div class="scanner-auto-result" id="scannerAutoResult">Auto parado</div>
-      <div class="scanner-selected" id="scannerSelected">Seleciona um valor</div>
     </div>
   </section>
 

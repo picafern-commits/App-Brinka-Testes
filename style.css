@@ -1108,12 +1108,12 @@ body {
 }
 
 
-/* Scanner dinheiro assistido */
-.scanner-open-btn {
-  margin-bottom: 10px;
+/* Editar fechos + sem valor esperado manual */
+#expected[type="hidden"] {
+  display: none !important;
 }
 
-.scanner-modal {
+.edit-modal {
   position: fixed;
   inset: 0;
   z-index: 9999;
@@ -1124,12 +1124,12 @@ body {
   backdrop-filter: blur(16px);
 }
 
-.scanner-modal.hidden {
+.edit-modal.hidden {
   display: none !important;
 }
 
-.scanner-card {
-  width: min(720px, 96vw);
+.edit-card {
+  width: min(760px, 96vw);
   max-height: 92vh;
   overflow-y: auto;
   border-radius: 28px;
@@ -1139,23 +1139,22 @@ body {
     linear-gradient(145deg, rgba(63, 32, 68, .98), rgba(28, 0, 36, .98));
   box-shadow: 0 30px 90px rgba(0,0,0,.45);
   padding: 18px;
-  color: var(--text);
 }
 
-.scanner-head {
+.edit-head {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
   gap: 14px;
-  margin-bottom: 14px;
+  align-items: flex-start;
+  margin-bottom: 16px;
 }
 
-.scanner-head h3 {
+.edit-head h3 {
   margin: 0;
   font-size: 26px;
 }
 
-.scanner-close {
+.edit-close {
   width: 42px;
   height: 42px;
   border-radius: 16px;
@@ -1166,104 +1165,22 @@ body {
   font-weight: 900;
 }
 
-.scanner-video-wrap {
-  position: relative;
-  overflow: hidden;
-  border-radius: 24px;
-  background: rgba(0,0,0,.35);
-  aspect-ratio: 16 / 10;
-  border: 1px solid rgba(255,255,255,.14);
-}
-
-#moneyScannerVideo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.scanner-frame {
-  position: absolute;
-  inset: 14%;
-  border: 3px solid rgba(255, 194, 71, .86);
-  border-radius: 22px;
-  box-shadow: 0 0 0 999px rgba(0,0,0,.12);
-  pointer-events: none;
-}
-
-.scanner-help {
-  color: var(--muted);
-  font-weight: 750;
-  line-height: 1.35;
-  margin: 12px 0;
-}
-
-.scanner-tabs,
-.scanner-actions {
+.edit-actions {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 14px;
 }
 
-.scanner-tab,
-.scanner-values button {
-  min-height: 44px;
-  border-radius: 16px;
-  padding: 0 16px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.08);
-  color: var(--text);
-  font-weight: 950;
-}
-
-.scanner-tab.active,
-.scanner-values button.active {
-  color: #371300;
-  background: linear-gradient(135deg, #ffc247, #ff9500);
-  border-color: transparent;
-}
-
-.scanner-values {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin: 14px 0;
-}
-
-.scanner-actions button {
+.edit-actions button {
   flex: 1;
 }
 
-.scanner-selected {
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.07);
-  color: var(--muted);
-  font-weight: 900;
-  text-align: center;
-}
-
 @media (max-width: 520px) {
-  .scanner-card {
+  .edit-card {
     padding: 14px;
     border-radius: 24px;
   }
-
-  .scanner-values {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .scanner-video-wrap {
-    aspect-ratio: 4 / 5;
+  .edit-actions {
+    flex-direction: column;
   }
 }
-
-/* Scanner automático experimental */
-.scanner-auto-box{margin-top:12px;padding:14px;border-radius:18px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
-.scanner-auto-box strong{display:block;color:var(--text);margin-bottom:4px}
-.scanner-auto-box p{margin:0;color:var(--muted);font-weight:750;line-height:1.35;font-size:13px}
-.scanner-auto-result{margin-top:10px;padding:12px;border-radius:16px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.16);color:#ffd7a0;font-weight:950;text-align:center}
-.scanner-auto-result.ok{color:#9ff2c5;background:rgba(49,210,124,.10);border-color:rgba(49,210,124,.26)}
-.scanner-auto-result.warn{color:#ffd7a0;background:rgba(255,149,0,.10);border-color:rgba(255,149,0,.26)}
-@media(max-width:520px){.scanner-auto-box{grid-template-columns:1fr}}
