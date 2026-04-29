@@ -1077,6 +1077,7 @@ async function openMoneyScanner() {
 }
 
 function closeMoneyScanner() {
+  stopScannerAuto();
   const modal = $("moneyScannerModal");
   if (modal) {
     modal.classList.add("hidden");
@@ -1106,6 +1107,82 @@ function addScannerQty(amount) {
   toast(`${amount > 0 ? "+" : ""}${amount} ${label} de ${String(scannerState.selectedValue).replace(".", ",")}€`);
 }
 
+
+// Auto-contagem experimental por câmera
+let scannerAutoTimer=null, scannerAutoEnabled=false, scannerLastAutoKey="", scannerLastAutoAt=0;
+
+function scannerSetAutoResult(text, cls="warn"){
+  const el=$("scannerAutoResult"); if(!el)return;
+  el.textContent=text; el.classList.remove("ok","warn"); el.classList.add(cls);
+}
+function rgbToHsv(r,g,b){
+  r/=255;g/=255;b/=255; const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
+  let h=0; if(d!==0){ if(max===r)h=((g-b)/d)%6; else if(max===g)h=(b-r)/d+2; else h=(r-g)/d+4; h*=60; if(h<0)h+=360; }
+  return {h,s:max===0?0:d/max,v:max};
+}
+function scannerAnalyzeFrame(){
+  const video=$("moneyScannerVideo"); if(!video||!video.videoWidth||!video.videoHeight)return null;
+  const canvas=document.createElement("canvas"); canvas.width=160; canvas.height=120;
+  const ctx=canvas.getContext("2d",{willReadFrequently:true}); ctx.drawImage(video,0,0,160,120);
+  const data=ctx.getImageData(0,0,160,120).data;
+  let count=0,rSum=0,gSum=0,bSum=0,satSum=0,valSum=0,colorful=0,bright=0,dark=0;
+  for(let y=28;y<92;y+=2){for(let x=34;x<126;x+=2){
+    const i=(y*160+x)*4, r=data[i], g=data[i+1], b=data[i+2], hsv=rgbToHsv(r,g,b);
+    count++; rSum+=r; gSum+=g; bSum+=b; satSum+=hsv.s; valSum+=hsv.v;
+    if(hsv.s>.18&&hsv.v>.20)colorful++; if(hsv.v>.72)bright++; if(hsv.v<.20)dark++;
+  }}
+  const hsv=rgbToHsv(rSum/count,gSum/count,bSum/count), sat=satSum/count, val=valSum/count;
+  const colorfulPct=colorful/count, brightPct=bright/count, darkPct=dark/count;
+  if(darkPct>.55||val<.22)return{type:"none",reason:"Pouca luz / sem objeto"};
+  if(colorfulPct<.08&&brightPct<.28)return{type:"none",reason:"Objeto pouco visível"};
+
+  let note=null, hue=hsv.h;
+  if(sat<.13&&val>.38)note=5;
+  else if((hue>=330||hue<18)&&sat>.18)note=10;
+  else if(hue>=185&&hue<=250&&sat>.15)note=20;
+  else if(hue>=18&&hue<=48&&sat>.18)note=50;
+  else if(hue>=78&&hue<=155&&sat>.13)note=100;
+  else if(hue>=48&&hue<=78&&sat>.18)note=200;
+  else if(hue>=260&&hue<=330&&sat>.12)note=500;
+  if(note)return{type:"notes",value:note,confidence:Math.min(.94,.50+colorfulPct+sat)};
+
+  let coin=null;
+  if(sat<.16&&val>.55)coin=1;
+  else if(hue>=25&&hue<=55&&sat>.20)coin=.10;
+  else if(hue>=45&&hue<=75&&sat>.12)coin=2;
+  if(coin)return{type:"coins",value:coin,confidence:.45};
+
+  return{type:"none",reason:"Não consegui reconhecer"};
+}
+function scannerApplyAutoDetection(result){
+  if(!result||result.type==="none"){scannerSetAutoResult(result?.reason||"A procurar dinheiro...","warn");return;}
+  const key=`${result.type}-${result.value}`, now=Date.now();
+  if(scannerLastAutoKey===key&&now-scannerLastAutoAt<2500){
+    scannerSetAutoResult(`Detetado ${String(result.value).replace(".",",")}€ — aguarda para não duplicar`,"warn");return;
+  }
+  scannerState.tab=result.type; scannerState.selectedValue=Number(result.value);
+  document.querySelectorAll("[data-scan-tab]").forEach(btn=>btn.classList.toggle("active",btn.dataset.scanTab===result.type));
+  renderScannerValues();
+  const input=moneyRowInputForValue(result.value);
+  if(!input){scannerSetAutoResult("Valor detetado mas campo não encontrado","warn");return;}
+  input.value=Number(input.value||0)+1; input.dispatchEvent(new Event("input",{bubbles:true}));
+  scannerLastAutoKey=key; scannerLastAutoAt=now;
+  scannerSetAutoResult(`✅ Adicionado automaticamente: ${result.type==="notes"?"nota":"moeda"} de ${String(result.value).replace(".",",")}€`,"ok");
+}
+function startScannerAuto(){
+  if(scannerAutoTimer)clearInterval(scannerAutoTimer);
+  scannerAutoEnabled=true; scannerLastAutoKey=""; scannerLastAutoAt=0;
+  const btn=$("scannerAutoToggle"); if(btn)btn.textContent="Auto: ON";
+  scannerSetAutoResult("Auto ligado — coloca uma nota/moeda dentro da moldura","warn");
+  scannerAutoTimer=setInterval(()=>scannerApplyAutoDetection(scannerAnalyzeFrame()),900);
+}
+function stopScannerAuto(){
+  scannerAutoEnabled=false; if(scannerAutoTimer)clearInterval(scannerAutoTimer); scannerAutoTimer=null;
+  const btn=$("scannerAutoToggle"); if(btn)btn.textContent="Auto: OFF";
+  scannerSetAutoResult("Auto parado","warn");
+}
+function toggleScannerAuto(){scannerAutoEnabled?stopScannerAuto():startScannerAuto();}
+
 function bindMoneyScanner() {
   $("openMoneyScanner")?.addEventListener("click", openMoneyScanner);
   $("closeMoneyScanner")?.addEventListener("click", closeMoneyScanner);
@@ -1125,6 +1202,7 @@ function bindMoneyScanner() {
   $("scannerAdd")?.addEventListener("click", () => addScannerQty(1));
   $("scannerPlusFive")?.addEventListener("click", () => addScannerQty(5));
   $("scannerMinus")?.addEventListener("click", () => addScannerQty(-1));
+  $("scannerAutoToggle")?.addEventListener("click", toggleScannerAuto);
 }
 
 function bindEvents() {

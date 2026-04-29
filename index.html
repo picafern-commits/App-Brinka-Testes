@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#5b0b68" />
   <title>Desktop - Brinka Firebase — Fecho de Caixa</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=scanner-dinheiro" />
+  <link rel="stylesheet" href="./style.css?v=scanner-auto" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Brinka" />
@@ -396,7 +396,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="./firebase-config.js?v=scrollfix-final"></script>
-  <script type="module" src="./app.js?v=scanner-dinheiro"></script>
+  <script type="module" src="./app.js?v=scanner-auto"></script>
 
   <section class="scanner-modal hidden" id="moneyScannerModal" aria-hidden="true">
     <div class="scanner-card">
@@ -430,6 +430,12 @@
         <button class="soft-btn" id="scannerPlusFive" type="button">+5</button>
       </div>
 
+      
+      <div class="scanner-auto-box">
+        <div><strong>Auto-contagem experimental</strong><p>Coloca uma nota/moeda de cada vez dentro da moldura. A app tenta detetar e soma automaticamente.</p></div>
+        <button class="primary-btn" id="scannerAutoToggle" type="button">Auto: OFF</button>
+      </div>
+      <div class="scanner-auto-result" id="scannerAutoResult">Auto parado</div>
       <div class="scanner-selected" id="scannerSelected">Seleciona um valor</div>
     </div>
   </section>
