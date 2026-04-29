@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#5b0b68" />
   <title>Desktop - Brinka Firebase — Fecho de Caixa</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=lucro-dia" />
+  <link rel="stylesheet" href="./style.css?v=valor-inicial-lucro" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Brinka" />
@@ -203,6 +203,7 @@
                 <div class="form-grid">
                   <label><span>Utilizador</span><input id="operator" type="text" placeholder="Ex: Ricardo" /></label>
                   <label><span>Loja</span><select id="store"></select></label>
+                  <label><span>Valor inicial</span><input id="initialValue" type="number" step="0.01" min="0" placeholder="0.00" /></label>
                   <label><span>Data</span><input id="closeDate" type="datetime-local" /></label>
                 </div>
 
@@ -232,7 +233,9 @@
                 <div class="total-row"><span>Notas</span><strong id="sumNotes">0,00 €</strong></div>
                 <div class="total-row"><span>Moedas</span><strong id="sumCoins">0,00 €</strong></div>
                 <div class="total-row"><span>Fecho anterior</span><strong id="sumExpected">0,00 €</strong></div>
-                <div class="total-row highlight"><span>Diferença</span><strong id="sumDiff">0,00 €</strong></div>
+                <div class="total-row"><span>Valor inicial</span><strong id="sumInitial">0,00 €</strong></div>
+                <div class="total-row highlight"><span>Lucro</span><strong id="sumProfit">0,00 €</strong></div>
+                <div class="total-row"><span>Diferença</span><strong id="sumDiff">0,00 €</strong></div>
                 <button class="primary-btn full" id="saveClosure">Guardar fecho</button>
                 <button class="soft-btn full" id="clearForm">Limpar formulário</button>
               </article>
@@ -264,7 +267,7 @@
               <table>
                 <thead>
                   <tr>
-                    <th>Data</th><th>Loja</th><th>Utilizador</th><th>Total</th><th>Fecho anterior</th><th>Diferença</th><th></th>
+                    <th>Data</th><th>Loja</th><th>Utilizador</th><th>Total</th><th>Valor inicial</th><th>Lucro</th><th>Fecho anterior</th><th>Diferença</th><th></th>
                   </tr>
                 </thead>
                 <tbody id="historyTable"></tbody>
@@ -420,7 +423,7 @@
   <div class="toast" id="toast"></div>
 
   <script src="./firebase-config.js?v=scrollfix-final"></script>
-  <script type="module" src="./app.js?v=lucro-dia"></script>
+  <script type="module" src="./app.js?v=valor-inicial-lucro"></script>
 
   <section class="edit-modal hidden" id="editClosureModal" aria-hidden="true">
     <div class="edit-card">
@@ -438,6 +441,7 @@
         <label><span>Utilizador</span><input id="editOperator" type="text" /></label>
         <label><span>Data</span><input id="editDate" type="datetime-local" /></label>
         <label><span>Total</span><input id="editTotal" type="number" step="0.01" min="0" /></label>
+        <label><span>Valor inicial</span><input id="editInitialValue" type="number" step="0.01" min="0" /></label>
         <label><span>Fecho anterior</span><input id="editPrevious" type="number" step="0.01" min="0" disabled /></label>
       </div>
 

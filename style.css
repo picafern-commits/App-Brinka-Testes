@@ -1257,3 +1257,29 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Valor inicial + lucro por fecho */
+.profit-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 950;
+  border: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.profit-badge.good {
+  color: #9ff2c5;
+  background: rgba(49,210,124,.12);
+  border-color: rgba(49,210,124,.28);
+}
+
+.profit-badge.bad {
+  color: #ffd0d7;
+  background: rgba(255,92,114,.14);
+  border-color: rgba(255,92,114,.30);
+}

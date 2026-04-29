@@ -525,12 +525,16 @@ function calculate() {
   const expected = getPreviousClosureValue();
   if ($("expected")) $("expected").value = expected ? String(expected.toFixed(2)) : "0";
   const diff = total - expected;
+  const initialValue = Number($("initialValue")?.value || 0);
+  const profit = total - initialValue;
 
   if ($("notesTotal")) $("notesTotal").textContent = eur(notesTotal);
   if ($("coinsTotal")) $("coinsTotal").textContent = eur(coinsTotal);
   if ($("sumNotes")) $("sumNotes").textContent = eur(notesTotal);
   if ($("sumCoins")) $("sumCoins").textContent = eur(coinsTotal);
   if ($("sumExpected")) $("sumExpected").textContent = eur(expected);
+  if ($("sumInitial")) $("sumInitial").textContent = eur(initialValue);
+  if ($("sumProfit")) $("sumProfit").textContent = eur(profit);
   if ($("sumDiff")) $("sumDiff").textContent = eur(diff);
   if ($("grandTotal")) $("grandTotal").textContent = eur(total);
 
@@ -542,7 +546,7 @@ function calculate() {
     badge.style.color = level === "danger" ? "#ffd0d7" : level === "warning" ? "#ffd7a0" : "#9ff2c5";
   }
 
-  return { notes, coins, notesTotal, coinsTotal, total, expected, diff };
+  return { notes, coins, notesTotal, coinsTotal, total, expected, diff, initialValue, profit };
 }
 
 function getDiffLevel(diff) {
@@ -595,6 +599,8 @@ async function saveClosure() {
     role: state.profile?.role || "user",
     expected: calc.expected,
     previousTotal: calc.expected,
+    initialValue: calc.initialValue,
+    profit: calc.profit,
     diff: calc.diff,
     diffLevel: getDiffLevel(calc.diff),
     diffLabel: getDiffLabel(calc.diff),
@@ -622,6 +628,7 @@ function clearForm(show = true) {
   document.querySelectorAll(".money-row input").forEach(i => i.value = "");
   if ($("store")) $("store").value = getActiveStoreId();
   setExpectedFromPrevious();
+  if ($("initialValue")) $("initialValue").value = "";
   if ($("obs")) $("obs").value = "";
   setNowDate();
   calculate();
@@ -647,6 +654,7 @@ function openEditClosure(id) {
   if ($("editOperator")) $("editOperator").value = item.operator || "";
   if ($("editDate")) $("editDate").value = toDateTimeLocalValue(item.dateIso);
   if ($("editTotal")) $("editTotal").value = Number(item.total || 0).toFixed(2);
+  if ($("editInitialValue")) $("editInitialValue").value = Number(item.initialValue || 0).toFixed(2);
   if ($("editPrevious")) $("editPrevious").value = previous ? previous.toFixed(2) : "0.00";
   if ($("editObs")) $("editObs").value = item.observation || "";
 
@@ -669,6 +677,8 @@ async function saveEditedClosure() {
   const dateIso = $("editDate")?.value ? new Date($("editDate").value).toISOString() : item.dateIso;
   const total = Number($("editTotal")?.value || 0);
   const previous = getPreviousClosureValue(id, dateIso);
+  const initialValue = Number($("editInitialValue")?.value || 0);
+  const profit = total - initialValue;
   const diff = total - previous;
 
   if (total <= 0) return toast("Total inválido");
@@ -686,6 +696,8 @@ async function saveEditedClosure() {
       dateIso,
       dateLabel: new Date(dateIso).toLocaleString("pt-PT", { dateStyle: "short", timeStyle: "short" }),
       total,
+      initialValue,
+      profit,
       expected: previous,
       previousTotal: previous,
       diff,
@@ -894,11 +906,13 @@ function renderHistory() {
       <td>${i.store || getActiveStoreName()}</td>
       <td>${i.operator || "—"}</td>
       <td><b>${eur(i.total)}</b></td>
+      <td>${eur(i.initialValue || 0)}</td>
+      <td><span class="profit-badge ${Number(i.profit || (Number(i.total || 0) - Number(i.initialValue || 0))) >= 0 ? "good" : "bad"}">${eur(i.profit || (Number(i.total || 0) - Number(i.initialValue || 0)))}</span></td>
       <td>${eur(i.previousTotal ?? i.expected)}</td>
       <td><span class="diff-badge ${getDiffLevel(i.diff)}">${eur(i.diff)} · ${getDiffLabel(i.diff)}</span></td>
       <td><button class="mini-btn" data-edit="${i.id || i.localId}">Editar</button> <button class="delete-row" data-delete="${i.id || i.localId}">Apagar</button></td>
     </tr>
-  `).join("") || `<tr><td colspan="7" class="muted">Sem resultados.</td></tr>`;
+  `).join("") || `<tr><td colspan="9" class="muted">Sem resultados.</td></tr>`;
 
   document.querySelectorAll("[data-edit]").forEach(b => b.addEventListener("click", () => openEditClosure(b.dataset.edit)));
   document.querySelectorAll("[data-delete]").forEach(b => b.addEventListener("click", () => deleteClosure(b.dataset.delete)));
@@ -1199,6 +1213,7 @@ function bindEvents() {
   });
 
   $("expected")?.addEventListener("input", calculate);
+  $("initialValue")?.addEventListener("input", calculate);
   $("saveClosure")?.addEventListener("click", saveClosure);
   $("clearForm")?.addEventListener("click", () => clearForm(true));
   $("search")?.addEventListener("input", renderHistory);
