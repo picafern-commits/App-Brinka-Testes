@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#070b18" />
   <title>Desktop - Brinka Firebase — Fecho de Caixa</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=brinka-concept1-topdock-20260820-1" />
+  <link rel="stylesheet" href="./style.css?v=brinka-conceptA-estrutura-20260820-2" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Brinka" />
@@ -58,48 +58,41 @@
 
   <div class="app-layout">
     <header class="app-dock sidebar" id="sidebar">
-      <div class="brand-card">
+      <div class="brand-card top-brand">
         <img class="brand-logo" src="assets/brinka-logo.png" alt="Brinka" />
-        <div>
-          <div class="brand-name">Brinka</div>
-          <div class="brand-sub">Fecho de Caixa</div>
-        </div>
-        <button class="sidebar-close" id="sidebarCloseBtn" type="button" aria-label="Fechar menu">×</button>
+        <div class="brand-name">Brinka</div>
       </div>
 
-      <nav class="nav-list" aria-label="Navegação principal">
-        <button class="nav-item active" data-page="dashboard" title="Dashboard">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span><b>Dashboard</b>
-        </button>
-        <button class="nav-item" data-page="fecho" title="Fecho de Caixa">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><path d="M8 13h8"/><path d="M12 10v6"/></svg></span><b>Fecho de Caixa</b>
-        </button>
-        <button class="nav-item" data-page="pedidos" title="Pedidos">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 13H5L6 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg></span><b>Pedidos</b>
-        </button>
-        <button class="nav-item" data-page="apontamentos" title="Apontamentos">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4.5-1 10-10a2.12 2.12 0 0 0-3-3l-10 10L4 20Z"/><path d="m13.5 7.5 3 3"/></svg></span><b>Apontamentos</b>
-        </button>
-        <button class="nav-item" data-page="historico" title="Histórico">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><b>Histórico</b>
-        </button>
-        <button class="nav-item" data-page="relatorios" title="Relatórios">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/></svg></span><b>Relatórios</b>
-        </button>
-        <button class="nav-item" data-page="user-config" title="Definições">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-1.2-.24-2.35-.68-3.4"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8" cy="9" r="1.2"/><circle cx="9.5" cy="15" r="1.2"/><path d="M17 3l4 4"/></svg></span><b>Definições</b>
-        </button>
-        <button class="nav-item admin-only" data-page="config" title="Configurações">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.09A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3V9.6h.09A1.7 1.7 0 0 0 4.6 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.5 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.34.71.6 1 .3.3.7.46 1.1.5h.09v4h-.09a1.7 1.7 0 0 0-1.7.5Z"/></svg></span><b>Configurações</b>
-        </button>
-        <button class="nav-item admin-only" data-page="users" title="Utilizadores">
-          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M14 15.5c.8-.65 1.9-1 3-1 2.5 0 4.5 1.8 4.5 4.5"/></svg></span><b>Utilizadores</b>
-        </button>
+      <nav class="nav-list concept-nav" aria-label="Navegação principal">
+        <button class="nav-item active" data-page="dashboard"><b>Resumo</b></button>
+        <button class="nav-item" data-page="fecho"><b>Fechos</b></button>
+        <button class="nav-item" data-page="pedidos"><b>Pedidos</b></button>
+        <button class="nav-item" data-page="relatorios"><b>Relatórios</b></button>
+        <div class="desktop-more-wrap">
+          <button class="nav-item desktop-more-toggle" id="desktopMoreBtn" type="button"><b>Mais</b><span class="chev">⌄</span></button>
+          <div class="desktop-more-menu" id="desktopMoreMenu" aria-hidden="true">
+            <button data-page="apontamentos"><span>✎</span><b>Apontamentos</b></button>
+            <button data-page="historico"><span>▤</span><b>Histórico</b></button>
+            <button data-page="user-config"><span>◉</span><b>Definições</b></button>
+            <button class="admin-only" data-page="config"><span>⚙</span><b>Configurações</b></button>
+            <button class="admin-only" data-page="users"><span>◎</span><b>Utilizadores</b></button>
+            <div class="more-separator"></div>
+            <button id="desktopLogoutBtn" type="button" class="more-logout"><span>↪</span><b>Sair</b></button>
+          </div>
+        </div>
       </nav>
 
-      <div class="nav-actions">
-        <button class="soft-btn" id="logoutBtn">Sair</button>
-        <button class="primary-btn" data-page="fecho">+ Novo fecho</button>
+      <div class="dock-tools">
+        <label class="dock-search" title="Pesquisa rápida">
+          <span>⌕</span>
+          <input id="globalSearch" type="search" placeholder="Pesquisar" autocomplete="off" />
+        </label>
+        <button class="dock-icon-btn" type="button" aria-label="Notificações"><span>♧</span><i></i></button>
+        <button class="dock-profile" id="dockProfileBtn" type="button" title="Perfil">
+          <span class="dock-avatar" id="dockAvatar">R</span>
+          <span class="dock-profile-copy"><b id="dockProfileName">Utilizador</b><small id="dockProfileStore">Braga</small></span>
+        </button>
+        <button class="primary-btn dock-new-close" data-page="fecho">+ Novo Fecho</button>
       </div>
     </header>
 
@@ -118,57 +111,82 @@
 
       <main class="content">
         <section class="page active" id="page-dashboard">
-          <div class="hero-grid dashboard-hero-grid">
-            <article class="hero-card hero-card-main">
-              <div>
-                <p class="eyebrow">Total contado hoje</p>
+          <div class="concept-dashboard-grid">
+            <article class="hero-card hero-card-main concept-main-total">
+              <div class="hero-main-copy">
+                <div class="hero-heading-row">
+                  <p class="eyebrow">Total contado hoje</p>
+                  <span class="hero-day-pill">Hoje</span>
+                </div>
                 <h2 id="todayTotal">0,00 €</h2>
                 <span id="todaySubtitle">Sem fechos hoje</span>
+                <div class="hero-trend"><span>↗</span><b>Visão do dia em tempo real</b></div>
               </div>
-              <div class="hero-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M7 6V4h10v2"/><circle cx="16.5" cy="12.5" r="1.5"/></svg></div>
+              <div class="hero-sparkline" aria-hidden="true">
+                <svg viewBox="0 0 520 180" preserveAspectRatio="none">
+                  <defs><linearGradient id="heroLine" x1="0" x2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset=".55" stop-color="#ff3f9b"/><stop offset="1" stop-color="#ff8a35"/></linearGradient></defs>
+                  <path class="spark-glow" d="M10 152 C80 145,90 118,140 128 S210 88,255 110 S325 76,360 86 S420 36,510 26"/>
+                  <path class="spark-line" d="M10 152 C80 145,90 118,140 128 S210 88,255 110 S325 76,360 86 S420 36,510 26"/>
+                </svg>
+              </div>
             </article>
-            <article class="metric-card metric-card-last"><span class="metric-symbol metric-symbol-cyan"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><span>Último fecho</span><strong id="lastClosure">—</strong></article>
-            <article class="metric-card metric-card-total"><span class="metric-symbol metric-symbol-violet"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M8 11h8M8 15h5"/></svg></span><span>Total de fechos</span><strong id="totalClosures">0</strong></article>
+
+            <div class="concept-kpi-grid">
+              <article class="metric-card concept-kpi">
+                <span class="metric-symbol metric-symbol-violet">◷</span>
+                <span>Último fecho</span>
+                <strong id="lastClosure">—</strong>
+                <small>Último registo guardado</small>
+              </article>
+              <article class="metric-card concept-kpi">
+                <span class="metric-symbol metric-symbol-cyan">▣</span>
+                <span>Total de fechos</span>
+                <strong id="totalClosures">0</strong>
+                <small>Registos nesta loja</small>
+              </article>
+              <article class="metric-card concept-kpi concept-ticket">
+                <span class="metric-symbol metric-symbol-orange">≋</span>
+                <span>Média por fecho</span>
+                <strong id="avgClosure">0,00 €</strong>
+                <small>Valor médio registado</small>
+              </article>
+              <article class="metric-card concept-quick-close" data-page="fecho" role="button" tabindex="0">
+                <span class="quick-bolt">⚡</span>
+                <span>Novo fecho</span>
+                <strong>Começar</strong>
+                <small>Ação rápida</small>
+              </article>
+            </div>
           </div>
 
-          <div class="panel-grid">
-            <article class="panel">
+          <div class="concept-main-row">
+            <article class="panel concept-recent-panel">
               <div class="panel-title">
-                <h3>Fechos recentes</h3>
+                <div><span class="panel-kicker">ATIVIDADE</span><h3>Fechos recentes</h3></div>
                 <button class="text-btn" data-page="historico">Ver todos</button>
               </div>
-              <div id="recentClosures" class="cards-list"></div>
+              <div id="recentClosures" class="cards-list concept-recent-list"></div>
             </article>
 
-            <article class="panel">
-              <div class="panel-title"><h3>Resumo empresa</h3></div>
-              <div class="summary-boxes">
-                <div><span>Melhor fecho</span><strong id="bestClosure">0,00 €</strong></div>
-                <div><span>Total acumulado</span><strong id="allTimeTotal">0,00 €</strong></div>
-                <div><span>Média por fecho</span><strong id="avgClosure">0,00 €</strong></div>
+            <article class="panel concept-summary-panel dashboard-intel" id="dashboardInteligente">
+              <div class="panel-title">
+                <div><span class="panel-kicker">ANÁLISE</span><h3>Resumo empresa</h3></div>
+                <span class="pill" id="dashHealth">Sem dados</span>
+              </div>
+              <div class="summary-hero-value">
+                <span>Total acumulado</span>
+                <strong id="allTimeTotal">0,00 €</strong>
+                <small>Melhor fecho: <b id="bestClosure">0,00 €</b></small>
+              </div>
+              <div class="chart-wrap concept-line-chart">
+                <div class="chart-title"><span>Últimos 7 dias</span><b id="chartTotal7">0,00 €</b></div>
+                <div class="bar-chart" id="weekChart"></div>
+              </div>
+              <div class="smart-hidden-metrics" aria-hidden="true">
+                <span id="smartAvg"></span><span id="smartWorstDiff"></span><span id="smartOkRate"></span><span id="smartTodayVsAvg"></span><span id="smartInsights"></span>
               </div>
             </article>
           </div>
-
-          <article class="panel dashboard-intel" id="dashboardInteligente">
-            <div class="panel-title">
-              <h3>Dashboard Inteligente</h3>
-              <span class="pill" id="dashHealth">Sem dados</span>
-            </div>
-            <div class="intel-grid">
-              <div class="intel-card"><span>Média por fecho</span><strong id="smartAvg">0,00 €</strong></div>
-              <div class="intel-card"><span>Maior diferença</span><strong id="smartWorstDiff">0,00 €</strong></div>
-              <div class="intel-card"><span>Fechos certos</span><strong id="smartOkRate">0%</strong></div>
-              <div class="intel-card"><span>Hoje vs média</span><strong id="smartTodayVsAvg">0%</strong></div>
-            </div>
-            <div class="chart-wrap">
-              <div class="chart-title"><span>Últimos 7 dias</span><b id="chartTotal7">0,00 €</b></div>
-              <div class="bar-chart" id="weekChart"></div>
-            </div>
-            <div class="insights-list" id="smartInsights"></div>
-          </article>
-
-
 
           <article class="panel profit-panel" id="profitPanel">
             <div class="panel-title">
@@ -551,10 +569,10 @@
   </div>
 
   <nav class="mobile-dock" aria-label="Navegação móvel">
-    <button class="mobile-dock-item active" data-page="dashboard"><span>⌂</span><b>Início</b></button>
-    <button class="mobile-dock-item" data-page="fecho"><span>€</span><b>Fecho</b></button>
-    <button class="mobile-dock-item mobile-new" data-page="fecho"><span>+</span><b>Novo</b></button>
-    <button class="mobile-dock-item" data-page="pedidos"><span>▣</span><b>Pedidos</b></button>
+    <button class="mobile-dock-item active" data-page="dashboard"><span>⌂</span><b>Resumo</b></button>
+    <button class="mobile-dock-item" data-page="fecho"><span>▣</span><b>Fechos</b></button>
+    <button class="mobile-dock-item" data-page="pedidos"><span>♧</span><b>Pedidos</b></button>
+    <button class="mobile-dock-item" data-page="relatorios"><span>▥</span><b>Relatórios</b></button>
     <button class="mobile-dock-item" id="mobileMoreBtn" type="button"><span>•••</span><b>Mais</b></button>
   </nav>
 
