@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#5b0b68" />
+  <meta name="theme-color" content="#070b18" />
   <title>Desktop - Brinka Firebase — Fecho de Caixa</title>
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="./style.css?v=apontamentos-cores-backup" />
+  <link rel="stylesheet" href="./style.css?v=brinka-concept1-topdock-20260820-1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Brinka" />
@@ -57,33 +57,51 @@
   <div class="app-bg"></div>
 
   <div class="app-layout">
-    <aside class="sidebar" id="sidebar">
+    <header class="app-dock sidebar" id="sidebar">
       <div class="brand-card">
         <img class="brand-logo" src="assets/brinka-logo.png" alt="Brinka" />
         <div>
           <div class="brand-name">Brinka</div>
           <div class="brand-sub">Fecho de Caixa</div>
         </div>
+        <button class="sidebar-close" id="sidebarCloseBtn" type="button" aria-label="Fechar menu">×</button>
       </div>
 
-      <nav class="nav-list">
-        <button class="nav-item active" data-page="dashboard"><span>📊</span><b>Dashboard</b></button>
-        <button class="nav-item" data-page="fecho"><span>💶</span><b>Fecho de Caixa</b></button>
-        <button class="nav-item" data-page="apontamentos"><span>✎</span><b>Apontamentos</b></button>
-        <button class="nav-item" data-page="historico"><span>🧾</span><b>Histórico</b></button>
-        <button class="nav-item" data-page="relatorios"><span>📈</span><b>Relatórios</b></button>
-        <button class="nav-item admin-only" data-page="config"><span>⚙️</span><b>Configurações</b></button>
-        <button class="nav-item admin-only" data-page="users"><span>👥</span><b>Utilizadores</b></button>
+      <nav class="nav-list" aria-label="Navegação principal">
+        <button class="nav-item active" data-page="dashboard" title="Dashboard">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></span><b>Dashboard</b>
+        </button>
+        <button class="nav-item" data-page="fecho" title="Fecho de Caixa">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"/><path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"/><path d="M8 13h8"/><path d="M12 10v6"/></svg></span><b>Fecho de Caixa</b>
+        </button>
+        <button class="nav-item" data-page="pedidos" title="Pedidos">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 13H5L6 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg></span><b>Pedidos</b>
+        </button>
+        <button class="nav-item" data-page="apontamentos" title="Apontamentos">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4.5-1 10-10a2.12 2.12 0 0 0-3-3l-10 10L4 20Z"/><path d="m13.5 7.5 3 3"/></svg></span><b>Apontamentos</b>
+        </button>
+        <button class="nav-item" data-page="historico" title="Histórico">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14v18l-3-2-4 2-4-2-3 2V3Z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><b>Histórico</b>
+        </button>
+        <button class="nav-item" data-page="relatorios" title="Relatórios">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20V7"/></svg></span><b>Relatórios</b>
+        </button>
+        <button class="nav-item" data-page="user-config" title="Definições">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9c0-1.2-.24-2.35-.68-3.4"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8" cy="9" r="1.2"/><circle cx="9.5" cy="15" r="1.2"/><path d="M17 3l4 4"/></svg></span><b>Definições</b>
+        </button>
+        <button class="nav-item admin-only" data-page="config" title="Configurações">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21H9.6v-.09A1.7 1.7 0 0 0 8.5 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3V9.6h.09A1.7 1.7 0 0 0 4.6 8.5a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.09A1.7 1.7 0 0 0 15.5 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.13.37.34.71.6 1 .3.3.7.46 1.1.5h.09v4h-.09a1.7 1.7 0 0 0-1.7.5Z"/></svg></span><b>Configurações</b>
+        </button>
+        <button class="nav-item admin-only" data-page="users" title="Utilizadores">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M14 15.5c.8-.65 1.9-1 3-1 2.5 0 4.5 1.8 4.5 4.5"/></svg></span><b>Utilizadores</b>
+        </button>
       </nav>
 
-      <div class="side-status">
-        <div class="status-dot" id="statusDot"></div>
-        <div>
-          <strong id="storageStatus">A verificar Firebase...</strong>
-          <small id="syncStatus">Sincronização em tempo real</small>
-        </div>
+      <div class="nav-actions">
+        <button class="soft-btn" id="logoutBtn">Sair</button>
+        <button class="primary-btn" data-page="fecho">+ Novo fecho</button>
       </div>
-    </aside>
+    </header>
 
     <section class="main-area">
       <header class="topbar">
@@ -95,28 +113,22 @@
           </div>
         </div>
 
-        <div class="top-actions">
-          <div class="user-badge" id="userBadge">—</div>
-          <button class="soft-btn" id="themeBtn">Tema</button>
-          <button class="soft-btn" id="logoutBtn">Sair</button>
-          <button class="primary-btn" data-page="fecho">+ Novo fecho</button>
-        </div>
+
       </header>
 
       <main class="content">
         <section class="page active" id="page-dashboard">
-          <div class="hero-grid">
-            <article class="hero-card">
+          <div class="hero-grid dashboard-hero-grid">
+            <article class="hero-card hero-card-main">
               <div>
                 <p class="eyebrow">Total contado hoje</p>
                 <h2 id="todayTotal">0,00 €</h2>
                 <span id="todaySubtitle">Sem fechos hoje</span>
               </div>
-              <div class="hero-icon">💶</div>
+              <div class="hero-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M7 6V4h10v2"/><circle cx="16.5" cy="12.5" r="1.5"/></svg></div>
             </article>
-            <article class="metric-card"><span>Diferença hoje</span><strong id="todayDiff">0,00 €</strong></article>
-            <article class="metric-card"><span>Total de fechos</span><strong id="totalClosures">0</strong></article>
-            <article class="metric-card"><span>Último fecho</span><strong id="lastClosure">—</strong></article>
+            <article class="metric-card metric-card-last"><span class="metric-symbol metric-symbol-cyan"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></span><span>Último fecho</span><strong id="lastClosure">—</strong></article>
+            <article class="metric-card metric-card-total"><span class="metric-symbol metric-symbol-violet"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M8 11h8M8 15h5"/></svg></span><span>Total de fechos</span><strong id="totalClosures">0</strong></article>
           </div>
 
           <div class="panel-grid">
@@ -236,7 +248,6 @@
                 <div class="total-row"><span>Fecho anterior</span><strong id="sumExpected">0,00 €</strong></div>
                 <div class="total-row"><span>Valor inicial</span><strong id="sumInitial">0,00 €</strong></div>
                 <div class="total-row highlight"><span>Lucro</span><strong id="sumProfit">0,00 €</strong></div>
-                <div class="total-row"><span>Diferença</span><strong id="sumDiff">0,00 €</strong></div>
                 <button class="primary-btn full" id="saveClosure">Guardar fecho</button>
                 <button class="soft-btn full" id="clearForm">Limpar formulário</button>
               </article>
@@ -271,6 +282,16 @@
           </article>
         </section>
 
+        <section class="page" id="page-pedidos">
+          <article class="panel">
+            <div class="panel-title">
+              <h3>Pedidos</h3>
+              <button class="primary-btn" id="openPedidoModal" type="button">Adicionar pedido</button>
+            </div>
+            <div id="pedidosList" class="cards-list"></div>
+          </article>
+        </section>
+
         <section class="page" id="page-apontamentos">
           <div class="notes-layout">
             <article class="panel note-editor">
@@ -301,6 +322,35 @@
                 <button class="soft-btn" id="exportNotes" type="button">Exportar</button>
               </div>
               <div id="notesList" class="cards-list"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="page-user-config">
+          <div class="panel-grid">
+            <article class="panel theme-lab">
+              <div class="panel-title">
+                <h3>Cores da app</h3>
+                <span class="pill" id="userThemeName">Brinka</span>
+              </div>
+              <div class="theme-preview">
+                <div class="theme-sample"></div>
+                <div>
+                  <strong>Visual ativo</strong>
+                  <span>Esta preferência fica guardada neste dispositivo.</span>
+                </div>
+              </div>
+              <div class="palette-grid" id="userPaletteGrid"></div>
+              <label class="wide-label color-field">
+                <span>Cor personalizada</span>
+                <input id="userCustomAccent" type="color" value="#c2188c" />
+              </label>
+              <button class="soft-btn full" id="userApplyCustomTheme" type="button">Aplicar cor personalizada</button>
+              <div class="theme-options">
+                <label><span>Intensidade</span><select id="userColorIntensity"><option value="minimal">Minimalista</option><option value="balanced">Equilibrado</option><option value="colorful">Colorido</option></select></label>
+                <label class="theme-switch"><input id="userThemeGradients" type="checkbox" checked><span>Gradientes</span></label>
+                <label class="theme-switch"><input id="userThemeGlow" type="checkbox" checked><span>Brilho suave</span></label>
+              </div>
             </article>
           </div>
         </section>
@@ -346,6 +396,23 @@
                 <input id="customAccent" type="color" value="#c2188c" />
               </label>
               <button class="soft-btn full" id="applyCustomTheme" type="button">Aplicar cor personalizada</button>
+              <div class="theme-options">
+                <label><span>Intensidade</span><select id="colorIntensity"><option value="minimal">Minimalista</option><option value="balanced">Equilibrado</option><option value="colorful">Colorido</option></select></label>
+                <label class="theme-switch"><input id="themeGradients" type="checkbox" checked><span>Gradientes</span></label>
+                <label class="theme-switch"><input id="themeGlow" type="checkbox" checked><span>Brilho suave</span></label>
+              </div>
+            </article>
+
+            <article class="panel screen-panel">
+              <div class="panel-title">
+                <h3>Ecrã deste dispositivo</h3>
+                <span class="pill" id="screenProfileStatus">Automático</span>
+              </div>
+              <div class="screen-current">
+                <div><span>Ecrã detetado</span><strong id="screenDetected">—</strong></div>
+                <div><span>Ajuste ativo</span><strong id="screenActiveProfile">Automático</strong></div>
+              </div>
+              <p class="muted">A app ajusta-se automaticamente ao tamanho real do monitor, tablet ou telemóvel.</p>
             </article>
 
             <article class="panel backup-panel">
@@ -483,11 +550,65 @@
     </section>
   </div>
 
+  <nav class="mobile-dock" aria-label="Navegação móvel">
+    <button class="mobile-dock-item active" data-page="dashboard"><span>⌂</span><b>Início</b></button>
+    <button class="mobile-dock-item" data-page="fecho"><span>€</span><b>Fecho</b></button>
+    <button class="mobile-dock-item mobile-new" data-page="fecho"><span>+</span><b>Novo</b></button>
+    <button class="mobile-dock-item" data-page="pedidos"><span>▣</span><b>Pedidos</b></button>
+    <button class="mobile-dock-item" id="mobileMoreBtn" type="button"><span>•••</span><b>Mais</b></button>
+  </nav>
+
+  <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop"></div>
+  <section class="mobile-more-sheet" id="mobileMoreSheet" aria-hidden="true">
+    <div class="mobile-sheet-handle"></div>
+    <div class="mobile-sheet-head"><div><p class="eyebrow">Navegação</p><h3>Mais opções</h3></div><button class="edit-close" id="mobileMoreClose" type="button">×</button></div>
+    <div class="mobile-more-grid">
+      <button data-page="apontamentos"><span>✎</span><b>Apontamentos</b></button>
+      <button data-page="historico"><span>▤</span><b>Histórico</b></button>
+      <button data-page="relatorios"><span>↗</span><b>Relatórios</b></button>
+      <button data-page="user-config"><span>◉</span><b>Definições</b></button>
+      <button class="admin-only" data-page="config"><span>⚙</span><b>Configurações</b></button>
+      <button class="admin-only" data-page="users"><span>◎</span><b>Utilizadores</b></button>
+    </div>
+    <button class="soft-btn full mobile-logout" id="mobileLogoutBtn" type="button">Sair da aplicação</button>
+  </section>
+
   <div class="overlay" id="overlay"></div>
   <div class="toast" id="toast"></div>
 
-  <script src="./firebase-config.js?v=scrollfix-final"></script>
-  <script type="module" src="./app.js?v=apontamentos-cores-backup"></script>
+  <section class="edit-modal hidden" id="pedidoModal" aria-hidden="true">
+    <div class="edit-card pedido-modal-card">
+      <div class="edit-head">
+        <div>
+          <p class="eyebrow">Pedidos</p>
+          <h3 id="pedidoModalTitle">Adicionar pedido</h3>
+        </div>
+        <button class="edit-close" id="closePedidoModal" type="button">×</button>
+      </div>
+
+      <input id="pedidoId" type="hidden" />
+
+      <div class="form-grid pedido-form-grid">
+        <label><span>Nome Cliente</span><input id="pedidoClienteNome" type="text" placeholder="Nome do cliente" /></label>
+        <label><span>Número telemóvel (opcional)</span><input id="pedidoTelemovel" type="tel" placeholder="9xxxxxxxx" /></label>
+        <label><span>Nome produto</span><input id="pedidoProdutoNome" type="text" placeholder="Nome do produto" /></label>
+        <label><span>Referência (opcional)</span><input id="pedidoReferencia" type="text" placeholder="Referência" /></label>
+      </div>
+
+      <label class="wide-label">
+        <span>Observações do pedido</span>
+        <textarea id="pedidoObservacoes" rows="4" placeholder="Notas, tamanho, cor, aviso ao cliente..."></textarea>
+      </label>
+
+      <div class="edit-actions">
+        <button class="soft-btn" id="cancelPedidoModal" type="button">Cancelar</button>
+        <button class="primary-btn" id="savePedido" type="button">Guardar registo de pedido</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="./firebase-config.js?v=brinka-topnav-20260715"></script>
+  <script type="module" src="./app.js?v=brinka-concept1-topdock-20260820-1"></script>
 
   <section class="edit-modal hidden" id="editClosureModal" aria-hidden="true">
     <div class="edit-card">
@@ -501,12 +622,45 @@
 
       <input id="editClosureId" type="hidden" />
 
-      <div class="form-grid">
+      <div class="form-grid closure-meta-grid">
         <label><span>Utilizador</span><input id="editOperator" type="text" /></label>
         <label><span>Data</span><input id="editDate" type="datetime-local" /></label>
-        <label><span>Total</span><input id="editTotal" type="number" step="0.01" min="0" /></label>
         <label><span>Valor inicial</span><input id="editInitialValue" type="number" step="0.01" min="0" /></label>
         <label><span>Fecho anterior</span><input id="editPrevious" type="number" step="0.01" min="0" disabled /></label>
+      </div>
+
+      <div class="closure-money-view" id="editMoneySection">
+        <div class="closure-money-head">
+          <div>
+            <p class="eyebrow">Dinheiro contado</p>
+            <h4>Notas e moedas</h4>
+          </div>
+          <span class="pill" id="editMoneyModeLabel">Detalhe completo</span>
+        </div>
+
+        <div class="legacy-closure-warning hidden" id="legacyClosureWarning">
+          Este fecho antigo não possui o detalhe guardado por notas e moedas. O total pode ser consultado, mas não será inventada uma decomposição.
+        </div>
+
+        <div class="edit-money-grid" id="editMoneyGrid">
+          <section class="edit-money-card">
+            <div class="edit-money-title"><span>💶</span><div><strong>Notas</strong><small>Quantidade por valor</small></div></div>
+            <div class="edit-denomination-list" id="editNotesRows"></div>
+            <div class="edit-money-subtotal"><span>Total em notas</span><strong id="editNotesTotal">0,00 €</strong></div>
+          </section>
+          <section class="edit-money-card">
+            <div class="edit-money-title"><span>🪙</span><div><strong>Moedas</strong><small>Quantidade por valor</small></div></div>
+            <div class="edit-denomination-list" id="editCoinsRows"></div>
+            <div class="edit-money-subtotal"><span>Total em moedas</span><strong id="editCoinsTotal">0,00 €</strong></div>
+          </section>
+        </div>
+
+        <div class="edit-closure-totals">
+          <div><span>Total contado</span><strong id="editGrandTotal">0,00 €</strong></div>
+          <div><span>Diferença</span><strong id="editDifference">0,00 €</strong></div>
+          <div><span>Lucro</span><strong id="editProfit">0,00 €</strong></div>
+        </div>
+        <input id="editTotal" type="hidden" />
       </div>
 
       <label class="wide-label">
